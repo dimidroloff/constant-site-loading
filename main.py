@@ -2,28 +2,37 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 
-# Запуск браузера (Chrome)
+# Настройки браузера (скрытый режим)
 options = webdriver.ChromeOptions()
-options.add_argument("--start-maximized")  # Открыть на весь экран
+options.add_argument("--headless=new")  # Без открытия окна
+options.add_argument("--disable-gpu")  # Отключение GPU (ускоряет работу)
+options.add_argument("--no-sandbox")  # Безопасный режим (для серверов)
+options.add_argument("--disable-blink-features=AutomationControlled")  # Убирает детектирование Selenium
+options.add_argument("--window-size=1920,1080")  # Эмуляция обычного экрана
+
+# Запуск браузера
 driver = webdriver.Chrome(options=options)
 
-# Переход на сайт
-url = "https://pruffme.com/webinar/"  # Замени на нужную ссылку
+# Открываем сайт
+url = "https://pruffme.com/webinar/?id="  # Замени на нужную ссылку
 driver.get(url)
 
-print("Бот запущен. Напишите сообщение и нажмите Enter.")
+# Делаем страницу "активной"
+driver.execute_script("document.hasFocus = function() { return true; }")
+
+print("Бот запущен в скрытом режиме. Напишите сообщение и нажмите Enter.")
 
 try:
     while True:
-        message = input("Введите сообщение для чата: ")  # Ждет команду
+        message = input("Введите сообщение для чата: ")  # Ждет команды
         if message.lower() == "exit":
-            break  # Выход из цикла
+            break  # Выход
 
-        # Найти поле ввода чата
+        # Найти поле ввода
         chat_input = driver.find_element(By.CSS_SELECTOR, "div.im-messages-input-text[contenteditable='true']")
-        chat_input.click()  # Кликнуть, чтобы активировать поле
-        chat_input.send_keys(message)  # Ввести текст
-        chat_input.send_keys(Keys.RETURN)  # Отправить
+        chat_input.click()  # Активируем поле
+        chat_input.send_keys(message)  # Вводим текст
+        chat_input.send_keys(Keys.RETURN)  # Отправляем
 
         print(f"Отправлено: {message}")
 
